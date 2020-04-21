@@ -1,5 +1,5 @@
 // TODO: We should move typedAction elsewhere since it's shared
-import { typedAction } from './users';
+import { typedAction } from '../index';
 import { Dispatch, AnyAction } from 'redux';
 import { sampleProducts } from '../../sampleData/sampleProducts';
 import { produce as p } from "immer";
@@ -16,7 +16,7 @@ export type CartItem = {
     quantity: number;
 }
 
-type ProductState = {
+export type ProductState = {
     products: Product[],
     loading: boolean,
     cart: CartItem[]
