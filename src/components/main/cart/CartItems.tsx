@@ -1,6 +1,15 @@
-import React from "react";
+import React /*{ MouseEvent }*/ from "react";
 import { connect } from "react-redux";
-import { Item, Header } from "semantic-ui-react";
+// import { Item } from "semantic-ui-react";
+import {
+  Avatar,
+  Typography,
+  Paper,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText
+} from "@material-ui/core";
 import { RootState } from "../../../redux/index";
 import { getCartItems, getTotalPrice } from "../../../helpers/getCartItems";
 import { priceFormat } from "../../../helpers/priceFormat";
@@ -10,26 +19,53 @@ const mapStateToProps = (state: RootState) => ({
   totalPrice: getTotalPrice(state)
 });
 
-type Props = ReturnType<typeof mapStateToProps>;
+// const mapDispatchToProps = {
+//   handleRemove: (id: number) => removeFromCart(id);
+// };
 
-const UnconnectedCartItems: React.FC<Props> = ({ cartItems, totalPrice }) => (
-  <>
-    <Item.Group divided>
-      {cartItems.map(cartItem => (
-        <Item key={cartItem.id}>
-          <Item.Image size="tiny" src={cartItem.img} />
-          <Item.Content>
-            <Item.Header>{cartItem.name}</Item.Header>
-            <Item.Meta>
-              <span className="price">{priceFormat(cartItem.price)}</span>
-            </Item.Meta>
-            <Item.Description>Quantity: {cartItem.quantity}</Item.Description>
-          </Item.Content>
-        </Item>
-      ))}
-    </Item.Group>
-    <Header as="h3">Total Price: {priceFormat(totalPrice)}</Header>
-  </>
-);
+type Props = ReturnType<typeof mapStateToProps>; // & typeof mapDispatchToProps>;
 
-export const CartItems = connect(mapStateToProps)(UnconnectedCartItems);
+const UnconnectedCartItems: React.FC<Props> = ({ cartItems, totalPrice }) => {
+  // const clickHandleRemove = (e: MouseEvent) => {
+  //   console.log(e.target)
+  //   const { id } = e.target.value;
+  //   handleRemove(id);
+
+  return (
+    <>
+      <Paper variant="outlined" color="inherit">
+        <List>
+          {cartItems.map(cartItem => (
+            <ListItem key={cartItem.id}>
+              <ListItemAvatar>
+                <Avatar
+                  src={cartItem.img}
+                  alt={cartItem.name}
+                  variant="rounded"
+                  sizes="xl"
+                />
+              </ListItemAvatar>
+              <br />
+              <ListItemText inset>
+                {cartItem.name.length > 15
+                  ? cartItem.name.slice(0, 14)
+                  : cartItem.name}
+              </ListItemText>
+              <ListItemText inset>{priceFormat(cartItem.price)}</ListItemText>
+              <ListItemText inset>Quantity: {cartItem.quantity}</ListItemText>
+            </ListItem>
+          ))}
+        </List>
+
+        <Typography variant="h4">
+          Total Price: {priceFormat(totalPrice)}
+        </Typography>
+      </Paper>
+    </>
+  );
+};
+
+export const CartItems = connect(
+  mapStateToProps,
+  null // mapDispatchToProps
+)(UnconnectedCartItems);

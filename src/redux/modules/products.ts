@@ -1,43 +1,32 @@
-// TODO: We should move typedAction elsewhere since it's shared
+/* Note: This implementatin of redux in app subscribes to the Redux Duck pattern - see https://github.com/erikras/ducks-modular-redux for explanation */
+
 import { typedAction } from "./users";
 import { Dispatch, AnyAction } from "redux";
 import { sampleProducts } from "../../sampleData/sampleProducts";
-import { produce as p } from "immer";
+// import { produce } from "immer";
 
-export type Product = {
-  id: number;
-  name: string;
-  price: number;
-  img: string;
-};
+// Action Types
+export enum ProductActions {
+  ADD_PRODUCTS = "products/ADD_PRODUCTS",
+  ADD_TO_CART = "products/ADD_TO_CART",
+  GET_CART = "products/GET_CART",
+  REMOVE_FROM_CART = "products/REMOVE_FROM_CART"
+}
 
-export type CartItem = {
-  id: number;
-  quantity: number;
-};
+const { ADD_PRODUCTS, ADD_TO_CART, GET_CART } = ProductActions;
 
-type ProductState = {
-  products: Product[];
-  loading: boolean;
-  cart: CartItem[];
-};
-
-const initialState: ProductState = {
-  products: [],
-  loading: false,
-  cart: []
-};
+/* Action Functions */
 
 export const addProducts = (products: Product[]) => {
-  return typedAction("products/ADD_PRODUCTS", products);
+  return typedAction(ADD_PRODUCTS, products);
 };
 
 export const addToCart = (product: Product, quantity: number) => {
-  return typedAction("products/ADD_TO_CART", { product, quantity });
+  return typedAction(ADD_TO_CART, { product, quantity });
 };
 
 export const getCart = () => {
-  return typedAction("products/GET_CART");
+  return typedAction(GET_CART);
 };
 
 // Action creator returning a thunk!
@@ -50,7 +39,34 @@ export const loadProducts = () => {
   };
 };
 
+// Class Types
+export type Product = {
+  id: number;
+  name: string;
+  price: number;
+  img: string;
+};
+
+export type CartItem = {
+  id: number;
+  quantity: number;
+};
+
+export type ProductState = {
+  products: Product[];
+  loading: boolean;
+  cart: CartItem[];
+};
+
+const initialState: ProductState = {
+  products: [],
+  loading: false,
+  cart: []
+};
+
 type ProductAction = ReturnType<typeof addProducts | typeof addToCart>;
+
+// Reducer
 
 export function productsReducer(
   state = initialState,
@@ -58,30 +74,37 @@ export function productsReducer(
 ): ProductState {
   switch (action.type) {
     case "products/ADD_PRODUCTS":
+      // native Javascript reducer
       return {
         ...state,
         products: [...state.products, ...action.payload]
       };
 
-    // return p<ProductState>(state, (draftState) => {
-    //     draftState.products.push(...action.payload);
+    // using Immer
+    // return produce<ProductState>(state, draft => {
+    //   draft.products.push(...action.payload);
     // });
+
     case "products/ADD_TO_CART":
+      // native Javascript reducer
+      const addedProduct = action.payload.product;
       return {
         ...state,
         cart: [
-          ...state.cart,
+          ...state.cart, //.filter(cartItem => cartItem.id !== addedProduct.id),
           {
-            id: action.payload.product.id,
+            id: addedProduct.id,
             quantity: action.payload.quantity
           }
         ]
       };
-    // return p<ProductState>(state, draftState => {
-    //     draftState.cart.push({
-    //         id: action.payload.product.id,
-    //         quantity: action.payload.quantity
-    //     })
+
+    // using Immer
+    // return produce<ProductState>(state, draft => {
+    //   draft.cart.push({
+    //     id: addedProduct.id,
+    //     quantity: action.payload.quantity
+    //   });
     // });
 
     default:

@@ -35,7 +35,7 @@ const UnconnectedShop: React.FC<Props> = ({ loadProducts, products }) => {
   return (
     <Container>
       <CardHeader variant="h2">Shop</CardHeader>
-      <GridList cellHeight={350} cols={3}>
+      <GridList cellHeight={500} cols={3}>
         {products.map(product => (
           <GridListTile key={product.id}>
             <ProductCard product={product} />
