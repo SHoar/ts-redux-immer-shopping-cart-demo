@@ -1,19 +1,12 @@
 import React, { useState } from "react";
 // import { Form, Input, Button, Icon, Message } from "semantic-ui-react";
 import { TextField, Button, Snackbar } from "@material-ui/core";
-import { Alert, AlertProps } from "@material-ui/lab";
+import { Close } from "@material-ui/icons";
+import { Alert } from "@material-ui/lab";
 
 import LocalGroceryStoreIcon from "@material-ui/icons/LocalGroceryStore";
 import { addToCart, Product } from "../../../redux/modules/products";
 import { connect } from "react-redux";
-
-const mapDispatchToProps = { addToCart };
-
-type OwnProps = {
-  product: Product;
-};
-
-type Props = typeof mapDispatchToProps & OwnProps;
 
 const UnconnectedAddForm: React.FC<Props> = ({ addToCart, product }) => {
   const [quantity, setQuantity] = useState(1);
@@ -25,17 +18,7 @@ const UnconnectedAddForm: React.FC<Props> = ({ addToCart, product }) => {
     setAdded(true);
   };
 
-  return added ? (
-    <Snackbar open={added} color="green">
-      <Alert severity="success">
-        Added{" "}
-        <strong>
-          {quantity} {product.name}
-        </strong>{" "}
-        to your cart!
-      </Alert>
-    </Snackbar>
-  ) : (
+  return (
     <form>
       <TextField
         type="number"
@@ -45,13 +28,34 @@ const UnconnectedAddForm: React.FC<Props> = ({ addToCart, product }) => {
         onChange={e => setQuantity(Math.max(Number(e.target.value), 1))}
       />
       <br />
-      <Button onClick={add}>
-        <LocalGroceryStoreIcon />
-        Add to cart
+      <Button disableRipple onClick={add}>
+        <LocalGroceryStoreIcon /> {"  "}Add to cart
       </Button>
+      {added ? (
+        <>
+          <Snackbar open={added} color="green">
+            <Alert severity="success">
+              <strong>
+                {quantity} {product.name}
+              </strong>{" "}
+              added to cart!{"  "}
+              <Close onClick={() => setAdded(!added)}>x</Close>
+            </Alert>
+          </Snackbar>
+        </>
+      ) : (
+        ""
+      )}
     </form>
   );
 };
+
+type OwnProps = {
+  product: Product;
+};
+const mapDispatchToProps = { addToCart };
+
+type Props = typeof mapDispatchToProps & OwnProps;
 
 export const AddForm = connect(
   null,
