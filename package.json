@@ -19,7 +19,7 @@
     "@types/redux": "^3.6.0",
     "@types/redux-saga": "^0.10.5",
     "@types/redux-thunk": "^2.1.0",
-    "immer": "6.0.3",
+    "immer": "8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
